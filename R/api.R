@@ -13,6 +13,8 @@ pp_path <- function(..., root = rappdirs::user_data_dir("ppapi")){
 #' @param path character, the user configuration directory
 #' @return the token as character
 pp_token <- function(path = rappdirs::user_config_dir("ppapi")){
+  filename <- file.path(path[1], "ppapi.token")
+  if (!file.exists(filename)) stop("token file not found - have you saved it?")
   readLines(file.path(path[1], "ppapi.token"))
 }
 
@@ -34,6 +36,18 @@ write_pp_token <- function(x,
   }
   x
 }
+
+
+#' Browse an single WPDA
+#' 
+#' @export
+#' @param x character, one wdpaid (numeric or character code)
+#' @param base_url the base url for Prtected Planet
+pp_browse <- function(x = 555703527,
+                      base_url = "https://www.protectedplanet.net"){
+  httr::BROWSE(file.path(base_url, x[1]))
+}
+
 
 #' Append the token to a query
 #' 
@@ -94,13 +108,26 @@ pp_url <- function(x = "40366",
 #' GET WPDA identified by ID
 #' 
 #' @export
-#' @param x character, a wdpaid (numeric or charcater code)
+#' @param x character, one or more wdpaid (numeric or character code)
 #' @param form character, describes output format. One of 'list', 'tibble' or 'sf'
-#' @return list, tibble, sf or NULL
-pp_get_wdpaid <- function(x = "40366",
-                   form = c("list", "tibble", "sf")[2]){
+#' @return list, tibble, sf  I \code{length(x) > 1} then a tibble (or sf) is returned
+pp_get_wdpa <- function(x = "40366",
+                   form = c("list", "tibble", "sf")[3]){
   
-  uri <- pp_url(x)
+  form <- tolower(form[1])
+  
+  if (length(x) > 1) {
+     if (form == "list") {
+       frm <- "tibble"
+     } else {
+       frm = form
+     }
+     r <- lapply(x, pp_get_wdpa, form = frm) |>
+       dplyr::bind_rows()
+     return(r)
+  }
+  
+  uri <- pp_url(x[1])
   
   resp <- httr::GET(uri)
   
@@ -114,8 +141,7 @@ pp_get_wdpaid <- function(x = "40366",
   
   r <- httr::content(resp)[[1]]
   
-  form <- tolower(form[1])
-  
+
   if (form %in% c("tibble", "sf")){
     r <- wdpa_as_tibble(r)
     if (form == "sf"){
@@ -124,3 +150,5 @@ pp_get_wdpaid <- function(x = "40366",
   }
   r              
 }
+
+

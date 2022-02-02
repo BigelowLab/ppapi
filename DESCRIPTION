@@ -5,10 +5,10 @@ Version: 0.1
 Depends:
   R (>= 4.1)
 Imports:
+  dplyr,
   rappdirs,
   httr,
-  jsonlite,
-  geojsonsf
+  sf
 Maintainer: Ben Tupper <btupper@bigelow.org>
 Author: Ben Tupper <btupper@bigelow.org>
 URL: https://github.com/BigelowLab/ppapi

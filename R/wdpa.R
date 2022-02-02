@@ -80,6 +80,17 @@ extract_geometry <- function(x){
           matrix(ncol = 2, byrow = TRUE)
         sf::st_polygon(list(mat))
       },
+      "multipolygon" = {
+        mat <- lapply(x$geometry$coordinates,
+                      function(gg){
+                        lapply(gg, 
+                               function(g){
+                                 sapply(g, unlist) |>
+                                   matrix(ncol = 2, byrow = TRUE)
+                               })
+                      })
+        sf::st_multipolygon(mat)
+      },
       {
         warning("type not known:", x$geometry$type)
         NULL
