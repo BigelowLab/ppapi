@@ -1,0 +1,17 @@
+Package: ppapi
+Title: Protected Planet API Access
+Description: Provides access to Protected Planet API from R.
+Version: 0.1
+Depends:
+  R (>= 4.1)
+Imports:
+  rappdirs,
+  httr,
+  jsonlite,
+  geojsonsf
+Maintainer: Ben Tupper <btupper@bigelow.org>
+Author: Ben Tupper <btupper@bigelow.org>
+URL: https://github.com/BigelowLab/ppapi
+License: MIT + file LICENSE
+Encoding: UTF-8
+RoxygenNote: 7.1.2
